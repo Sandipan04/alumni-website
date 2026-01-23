@@ -10,7 +10,19 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
         
-        .admin-header { background: white; padding: 1rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        /* Fixed Header */
+        .admin-header { 
+            background: white; 
+            padding: 1rem 1.5rem; 
+            border-bottom: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
         .card-custom { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 2rem; }
         .form-label { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
         .form-control { border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.7rem; font-size: 0.95rem; }
@@ -19,7 +31,7 @@
         .btn-primary-custom { background-color: #4f46e5; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 500; color: white; transition: 0.2s; }
         .btn-primary-custom:hover { background-color: #4338ca; }
         
-        .btn-back { color: #64748b; text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+        .btn-back { color: #64748b; text-decoration: none; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .btn-back:hover { color: #4f46e5; }
 
         .table-admin th { font-size: 0.8rem; text-transform: uppercase; color: #64748b; background: #f8fafc; padding: 1rem; }
@@ -31,11 +43,16 @@
 <div class="admin-header">
     <div class="d-flex align-items-center gap-2">
         <i class="fas fa-shield-alt text-primary"></i>
-        <h5 class="m-0 fw-bold">Admin Dashboard</h5>
+        <h5 class="m-0 fw-bold d-none d-sm-block">Admin Dashboard</h5>
+        <h5 class="m-0 fw-bold d-block d-sm-none">Admin</h5>
     </div>
-    <div id="auth-controls" style="display:none;">
-        <a href="index.html" class="btn-back me-3">Back to Website</a>
-        <button id="btnLogout" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</button>
+    
+    <div class="d-flex align-items-center gap-3">
+        <a href="index.html" class="btn-back">
+            <i class="fas fa-arrow-left"></i> <span class="d-none d-sm-inline">Back to Website</span>
+        </a>
+
+        <button id="btnLogout" class="btn btn-outline-danger btn-sm rounded-pill px-3" style="display:none;">Logout</button>
     </div>
 </div>
 
@@ -113,22 +130,23 @@
 
         <h6 class="text-uppercase text-muted fw-bold mb-3 ls-1">Database Entries</h6>
         <div class="card-custom p-0 overflow-hidden">
-            <table class="table table-admin mb-0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Batch</th>
-                        <th>Institute</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-table-body"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-admin mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Batch</th>
+                            <th>Institute</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script type="module" src="js/admin.js"></script>
-
 </body>
 </html>
