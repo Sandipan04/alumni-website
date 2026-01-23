@@ -1,87 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>NISER Maths Alumni</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style> .photo-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 50%; } </style>
-</head>
-<body class="bg-light">
-
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h1>NISER Mathematics Alumni</h1>
-        <a href="admin.html" class="btn btn-outline-secondary btn-sm">Admin Login</a>
-    </div>
-    <div id="alumni-container" class="text-center">Loading...</div>
-</div>
-
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCM4gTTek83M2jKSxymcjnq2qDlAz-tCC0",
-    authDomain: "niser-alumni.firebaseapp.com",
-    projectId: "niser-alumni",
-    storageBucket: "niser-alumni.firebasestorage.app",
-    messagingSenderId: "816418809535",
-    appId: "1:816418809535:web:ea86a6e49d3406a4d6c80a",
-    measurementId: "G-GJ6VNSJ82P"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-  async function loadAlumni() {
-    const q = query(collection(db, "students"), orderBy("batch", "desc")); // Sorts by batch year
-    const snapshot = await getDocs(q);
+    <title>NISER Alumni Archive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    // Group data by Batch
-    const grouped = {};
-    snapshot.forEach(doc => {
-        const s = doc.data();
-        if (!grouped[s.batch]) grouped[s.batch] = [];
-        grouped[s.batch].push(s);
-    });
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    renderPage(grouped);
-  }
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo */
+            --primary-soft: #e0e7ff;
+            --bg-body: #f8fafc; /* Slate 50 */
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --sidebar-width: 260px;
+        }
 
-  function renderPage(groupedData) {
-    const container = document.getElementById('alumni-container');
-    container.innerHTML = "";
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+        }
 
-    // Loop through groups and build tables
-    for (const [batchName, students] of Object.entries(groupedData)) {
-        let rows = students.map(s => `
-            <tr>
-                <td>${s.photo ? `<img src="${s.photo}" class="photo-thumb">` : '-'}</td>
-                <td class="fw-bold">${s.name}</td>
-                <td>${s.supervisor}</td>
-                <td>${s.position}<br><small class="text-muted">${s.institute}</small></td>
-                <td><a href="mailto:${s.email}">Email</a></td>
-            </tr>
-        `).join('');
+        /* --- Sidebar Styling --- */
+        .sidebar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            z-index: 100;
+        }
 
-        container.innerHTML += `
-            <h3 class="mt-5 border-bottom pb-2">${batchName}</h3>
-            <table class="table table-bordered bg-white shadow-sm">
-                <thead class="table-dark">
-                    <tr><th>Img</th><th>Name</th><th>Supervisor</th><th>Position</th><th>Contact</th></tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-    }
-  }
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2.5rem;
+        }
 
-  loadAlumni();
-</script>
+        .nav-label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-gray);
+            font-weight: 500;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .nav-link:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .btn-admin {
+            margin-top: 2rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .btn-admin:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* --- Main Content Styling --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 3rem 4rem;
+        }
+
+        /* --- Table/Card Styling --- */
+        .batch-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+        
+        .batch-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .batch-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+        
+        .batch-count {
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .modern-table-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--card-shadow);
+            overflow: hidden; /* Clips the table corners */
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 1.5rem;
+        }
+
+        .table tbody td {
+            padding: 1.2rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover { background-color: #f8fafc; }
+
+        /* --- Element Styling --- */
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .primary-text { font-weight: 600; color: #0f172a; }
+        .sub-text { font-size: 0.85rem; color: #64748b; display: block; margin-top: 2px; }
+        
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #64748b;
+            background: #f1f5f9;
+            transition: 0.2s;
+            margin-right: 4px;
+        }
+        .icon-btn:hover { background: var(--primary); color: white; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar-container { display: none; } /* Hide sidebar on mobile for now */
+            .main-content { margin-left: 0; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-container">
+        <div class="brand-title">
+            <i class="fas fa-graduation-cap text-primary"></i>
+            <span>Alumni Hub</span>
+        </div>
+        
+        <div class="nav-label">Directories</div>
+        <nav id="sidebar-nav" class="nav flex-column">
+            <div class="text-center mt-5 text-muted small">Loading...</div>
+        </nav>
+
+        <a href="admin.html" class="btn-admin">
+            <i class="fas fa-lock"></i> Admin Access
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div id="alumni-container">
+            <div class="text-center" style="margin-top: 100px;">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <h5 class="text-muted">Loading Archive...</h5>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/home.js"></script>
+
 </body>
 </html>
