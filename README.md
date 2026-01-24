@@ -42,6 +42,8 @@ A modern, serverless alumni directory designed to manage and display university 
 └── README.md           # Documentation
 ```
 
+---
+
 ## 🚀 Setup Guide
 
 To run this project, you need free accounts on Firebase (for the database) and Cloudinary (for images).
@@ -102,6 +104,7 @@ To run this project, you need free accounts on Firebase (for the database) and C
     const CLOUDINARY_URL = "[https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload](https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload)";
     const CLOUDINARY_PRESET = "YOUR_UPLOAD_PRESET_NAME";
     ```
+---
 
 ## 🖥️ Local Development
 
@@ -117,6 +120,8 @@ Because this project uses ES6 Modules (`type="module"`), you cannot simply doubl
 1. Open terminal in the project folder.
 2. Run: python3 -m http.server.
 3. Go to http://localhost:8000.
+
+---
 
 ## 🛡️ License
 This project is open-source and available under the [MIT License](https://choosealicense.com/licenses/mit/).
