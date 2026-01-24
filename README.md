@@ -1,4 +1,4 @@
-#  Alumni Archive Hub
+# 🎓 Alumni Archive Hub
 
 A modern, serverless alumni directory designed to manage and display university alumni batches. It features a clean, professional "Card & Glass" UI for the public directory and a secure, feature-rich admin panel for data management.
 
