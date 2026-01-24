@@ -134,7 +134,7 @@ document.getElementById('btnCancelEdit').addEventListener('click', () => {
     document.getElementById('btnCancelEdit').style.display = 'none';
 });
 
-// --- SAVE ENTRY ---
+// --- SAVE WITH CLOUDINARY UPLOAD ---
 document.getElementById('btnSave').addEventListener('click', async () => {
     const btn = document.getElementById('btnSave');
     const status = document.getElementById('uploadStatus');
@@ -143,28 +143,13 @@ document.getElementById('btnSave').addEventListener('click', async () => {
     btn.disabled = true;
     btn.innerText = "Processing...";
 
-    let photoURL = document.getElementById('inPhoto').value; 
+    let photoURL = document.getElementById('inPhoto').value; // Default to existing
 
     // 1. Upload to Cloudinary if file selected
     if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-
-        // --- NEW: SIZE RESTRICTION (1MB = 1024 * 1024 bytes) ---
-        const maxSize = 1 * 1024 * 1024; 
-        
-        if (file.size > maxSize) {
-            alert("File is too large! Max size is 1MB.");
-            status.innerText = "Upload failed: File too large";
-            
-            // Reset button and stop everything
-            btn.disabled = false;
-            btn.innerText = "Save Entry";
-            return; 
-        }
-        // -------------------------------------------------------
-
         status.innerText = "Uploading to Cloudinary...";
         
+        const file = fileInput.files[0];
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', CLOUDINARY_PRESET);
@@ -178,7 +163,7 @@ document.getElementById('btnSave').addEventListener('click', async () => {
             if (!response.ok) throw new Error("Upload failed");
 
             const result = await response.json();
-            photoURL = result.secure_url; 
+            photoURL = result.secure_url; // Use the secure link Cloudinary gave us
             status.innerText = "Upload complete!";
             
         } catch (err) {

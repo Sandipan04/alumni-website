@@ -113,9 +113,19 @@
                 </div>
 
                 <div class="col-md-12">
-                    <label class="form-label">Photo Link</label>
-                    <input type="url" id="inPhoto" class="form-control">
+                    <label class="form-label">Profile Photo</label>
+                    <div class="d-flex gap-2 align-items-center">
+                        <input type="file" id="inFile" class="form-control" accept="image/*">
+                        
+                        <input type="hidden" id="inPhoto">
+                        
+                        <div id="uploadStatus" class="text-muted small" style="white-space: nowrap;">
+                            No file chosen
+                        </div>
+                    </div>
+                    <div class="form-text small text-muted">Leave empty to keep existing photo (if editing).</div>
                 </div>
+                
                 <div class="col-md-12">
                     <label class="form-label">Additional Info</label>
                     <textarea id="inInfo" class="form-control" rows="2"></textarea>
