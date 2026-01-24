@@ -1,11 +1,8 @@
-// js/admin.js
 import { db, auth } from './config.js';
-import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc, orderBy, query } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// --- AUTH LISTENER ---
+// --- AUTH ---
 onAuthStateChanged(auth, (user) => {
     const loginSec = document.getElementById('login-section');
     const dashSec = document.getElementById('dashboard-section');
@@ -23,7 +20,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- LOGIN / LOGOUT ---
 document.getElementById('btnLogin').addEventListener('click', () => {
     const e = document.getElementById('email').value;
     const p = document.getElementById('password').value;
@@ -32,8 +28,7 @@ document.getElementById('btnLogin').addEventListener('click', () => {
 
 document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 
-
-// --- LOAD TABLE ---
+// --- TABLE ---
 async function loadTable() {
     const tbody = document.getElementById('admin-table-body');
     tbody.innerHTML = '<tr><td colspan="4" class="text-center">Loading...</td></tr>';
@@ -48,17 +43,14 @@ async function loadTable() {
         row.innerHTML = `
             <td class="fw-bold">${s.name}</td>
             <td><span class="badge bg-secondary">${s.batch}</span></td>
-            <td><small>${s.supervisor || '-'}</small></td>
+            <td><small>${s.institute || '-'}</small></td>
             <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary me-1 btn-edit"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-sm btn-outline-danger btn-delete"><i class="fas fa-trash"></i></button>
             </td>
         `;
-
-        // Bind events manually to avoid Global Scope issues
         row.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(docSnap.id, s.name));
         row.querySelector('.btn-edit').addEventListener('click', () => startEdit(docSnap.id, s));
-        
         tbody.appendChild(row);
     });
 }
@@ -71,7 +63,7 @@ async function deleteStudent(id, name) {
     }
 }
 
-// --- EDIT PREP ---
+// --- EDIT ---
 function startEdit(id, data) {
     document.getElementById('editDocId').value = id;
     
@@ -79,17 +71,18 @@ function startEdit(id, data) {
     document.getElementById('inBatch').value = data.batch || '';
     document.getElementById('inName').value = data.name || '';
     document.getElementById('inSupervisor').value = data.supervisor || '';
+    document.getElementById('inInterests').value = data.researchInterests || ''; // <--- NEW
     document.getElementById('inPos').value = data.position || '';
     document.getElementById('inInst').value = data.institute || '';
     document.getElementById('inEmail').value = data.email || '';
-    document.getElementById('inWeb').value = data.website || ''; // New Field
+    document.getElementById('inWeb').value = data.website || '';
     document.getElementById('inPhoto').value = data.photo || '';
-    document.getElementById('inInfo').value = data.additionalInfo || ''; // New Field
+    document.getElementById('inInfo').value = data.additionalInfo || '';
 
     // UI Updates
     document.getElementById('formTitle').innerText = "Edit Student";
     document.getElementById('btnSave').innerText = "Update";
-    document.getElementById('btnSave').classList.replace('btn-success', 'btn-warning');
+    document.getElementById('btnSave').classList.replace('btn-primary-custom', 'btn-warning');
     document.getElementById('btnCancelEdit').style.display = 'inline-block';
     
     window.scrollTo(0,0);
@@ -101,20 +94,20 @@ document.getElementById('btnCancelEdit').addEventListener('click', () => {
     document.querySelectorAll('input, textarea').forEach(i => i.value = '');
     
     document.getElementById('formTitle').innerText = "Add New Student";
-    document.getElementById('btnSave').innerText = "Save Student";
-    document.getElementById('btnSave').classList.replace('btn-warning', 'btn-success');
+    document.getElementById('btnSave').innerText = "Save Entry";
+    document.getElementById('btnSave').classList.replace('btn-warning', 'btn-primary-custom');
     document.getElementById('btnCancelEdit').style.display = 'none';
 });
 
-// --- SAVE / UPDATE ---
+// --- SAVE ---
 document.getElementById('btnSave').addEventListener('click', async () => {
     const id = document.getElementById('editDocId').value;
     
-    // Gather Data
     const data = {
         batch: document.getElementById('inBatch').value,
         name: document.getElementById('inName').value,
         supervisor: document.getElementById('inSupervisor').value,
+        researchInterests: document.getElementById('inInterests').value, // <--- NEW
         position: document.getElementById('inPos').value,
         institute: document.getElementById('inInst').value,
         email: document.getElementById('inEmail').value,
@@ -132,8 +125,7 @@ document.getElementById('btnSave').addEventListener('click', async () => {
         } else {
             await addDoc(collection(db, "students"), data);
         }
-        // Reset form by clicking cancel
-        document.getElementById('btnCancelEdit').click();
+        document.getElementById('btnCancelEdit').click(); // Reset form
         loadTable();
         alert("Saved!");
     } catch (e) {

@@ -37,7 +37,6 @@ function renderPage(groupedData) {
     container.innerHTML = "";
     sidebar.innerHTML = "";
 
-    // Loop Batches
     for (const [batchName, students] of Object.entries(groupedData)) {
         
         const safeId = "batch-" + batchName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
@@ -51,7 +50,7 @@ function renderPage(groupedData) {
 
         // 2. Table Rows
         let rows = students.map(s => {
-            // Avatar Logic
+            // Avatar
             const avatarHtml = s.photo 
                 ? `<img src="${s.photo}" class="avatar" alt="${s.name}">` 
                 : `<div class="avatar-placeholder">${s.name.charAt(0)}</div>`;
@@ -69,6 +68,9 @@ function renderPage(groupedData) {
                 </td>
                 <td>
                     <div class="primary-text">${s.supervisor || '<span class="text-muted">-</span>'}</div>
+                </td>
+                <td>
+                    <div class="small text-dark">${s.researchInterests || '-'}</div>
                 </td>
                 <td>
                     <div class="primary-text">${s.position || ''}</div>
@@ -96,6 +98,7 @@ function renderPage(groupedData) {
                                     <th>Photo</th>
                                     <th>Name</th>
                                     <th>NISER Supervisor</th>
+                                    <th>Research Interests</th>
                                     <th>Current Status</th>
                                     <th>Contact</th>
                                     <th>Notes</th>

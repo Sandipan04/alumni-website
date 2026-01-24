@@ -10,7 +10,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
         
-        /* Fixed Header */
         .admin-header { 
             background: white; 
             padding: 1rem 1.5rem; 
@@ -18,9 +17,7 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
 
         .card-custom { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 2rem; }
@@ -46,12 +43,10 @@
         <h5 class="m-0 fw-bold d-none d-sm-block">Admin Dashboard</h5>
         <h5 class="m-0 fw-bold d-block d-sm-none">Admin</h5>
     </div>
-    
     <div class="d-flex align-items-center gap-3">
         <a href="index.html" class="btn-back">
             <i class="fas fa-arrow-left"></i> <span class="d-none d-sm-inline">Back to Website</span>
         </a>
-
         <button id="btnLogout" class="btn btn-outline-danger btn-sm rounded-pill px-3" style="display:none;">Logout</button>
     </div>
 </div>
@@ -61,7 +56,7 @@
     <div id="login-section" class="card-custom mx-auto" style="max-width: 400px; margin-top: 50px;">
         <h4 class="text-center mb-4 fw-bold">Sign In</h4>
         <div class="mb-3">
-            <label class="form-label">Email Address</label>
+            <label class="form-label">Email</label>
             <input type="email" id="email" class="form-control">
         </div>
         <div class="mb-4">
@@ -86,13 +81,18 @@
                     <input type="text" id="inBatch" class="form-control" placeholder="Int. MSc. 2021-26">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Student Name</label>
-                    <input type="text" id="inName" class="form-control" placeholder="Full Name">
+                    <label class="form-label">Name</label>
+                    <input type="text" id="inName" class="form-control">
                 </div>
                 
                 <div class="col-md-12">
                     <label class="form-label">NISER Supervisor</label>
                     <input type="text" id="inSupervisor" class="form-control">
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Research Interests</label>
+                    <input type="text" id="inInterests" class="form-control" placeholder="e.g. Algebraic Geometry, Number Theory">
                 </div>
 
                 <div class="col-md-6">
@@ -115,7 +115,7 @@
 
                 <div class="col-md-12">
                     <label class="form-label">Photo Link</label>
-                    <input type="url" id="inPhoto" class="form-control" placeholder="https://...">
+                    <input type="url" id="inPhoto" class="form-control">
                 </div>
                 <div class="col-md-12">
                     <label class="form-label">Additional Info</label>
