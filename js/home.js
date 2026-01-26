@@ -1,5 +1,5 @@
 import { db } from './config.js';
-import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, orderBy, query, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 async function loadAlumni() {
     const container = document.getElementById('alumni-container');
@@ -112,5 +112,53 @@ function renderPage(groupedData) {
         `;
     }
 }
+
+// --- NEW: HANDLE UPDATE REQUEST ---
+document.getElementById('btnSendUpdate').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSendUpdate');
+    const status = document.getElementById('msgStatus');
+    
+    const name = document.getElementById('msgName').value;
+    const batch = document.getElementById('msgBatch').value;
+    const message = document.getElementById('msgContent').value;
+
+    if (!name || !message) {
+        status.innerText = "Please provide your name and message.";
+        return;
+    }
+
+    try {
+        btn.disabled = true;
+        btn.innerText = "Sending...";
+
+        await addDoc(collection(db, "messages"), {
+            name: name,
+            batch: batch,
+            message: message,
+            timestamp: new Date(),
+            status: "unread"
+        });
+
+        // Success: Close modal and reset
+        const modalEl = document.getElementById('updateModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        
+        alert("Thanks! Your request has been sent to the Admin.");
+        
+        // Clear form
+        document.getElementById('msgName').value = "";
+        document.getElementById('msgBatch').value = "";
+        document.getElementById('msgContent').value = "";
+        status.innerText = "";
+
+    } catch (e) {
+        console.error(e);
+        status.innerText = "Error sending: " + e.message;
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Send Request";
+    }
+});
 
 loadAlumni();

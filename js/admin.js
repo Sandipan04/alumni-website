@@ -30,6 +30,7 @@ onAuthStateChanged(auth, (user) => {
         dashSec.style.display = 'block';
         btnLogout.style.display = 'block';
         loadTable();
+        loadInbox();
     } else {
         loginSec.style.display = 'block';
         dashSec.style.display = 'none';
@@ -235,3 +236,63 @@ document.getElementById('btnSave').addEventListener('click', async () => {
         btn.innerText = "Save Entry";
     }
 });
+
+// 3. ADD THE INBOX LOGIC
+async function loadInbox() {
+    const container = document.getElementById('inbox-container');
+    container.innerHTML = '<div class="text-center text-muted small">Checking...</div>';
+
+    try {
+        const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            container.innerHTML = '<div class="text-center text-muted small">No new messages.</div>';
+            return;
+        }
+
+        let html = '<ul class="list-group list-group-flush">';
+        
+        snapshot.forEach(docSnap => {
+            const msg = docSnap.data();
+            const date = msg.timestamp ? new Date(msg.timestamp.seconds * 1000).toLocaleDateString() : 'N/A';
+            
+            html += `
+                <li class="list-group-item d-flex justify-content-between align-items-start bg-light mb-2 rounded border">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold text-dark">
+                            ${msg.name} 
+                            <span class="badge bg-secondary rounded-pill fw-normal small">${msg.batch || 'N/A'}</span>
+                        </div>
+                        <p class="mb-1 text-secondary small">${msg.message}</p>
+                        <small class="text-muted" style="font-size: 0.75rem;">Sent: ${date}</small>
+                    </div>
+                    <button class="btn btn-sm text-danger btn-delete-msg" data-id="${docSnap.id}" title="Dismiss">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+            `;
+        });
+
+        html += '</ul>';
+        container.innerHTML = html;
+
+        // Attach Delete Events
+        document.querySelectorAll('.btn-delete-msg').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                if(confirm("Dismiss this message?")) {
+                    await deleteDoc(doc(db, "messages", id));
+                    loadInbox(); // Refresh inbox
+                }
+            });
+        });
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="text-danger small">Error loading inbox.</div>';
+    }
+}
+
+// 4. Attach Refresh Button
+document.getElementById('btnRefreshInbox').addEventListener('click', loadInbox);

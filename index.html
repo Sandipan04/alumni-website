@@ -38,6 +38,9 @@
         <a href="admin.html" class="btn-admin-sidebar">
             <i class="fas fa-lock"></i> Admin Access
         </a>
+        <button class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#updateModal">
+            <i class="fas fa-paper-plane"></i> Request Update
+        </button>
     </div>
 
     <div class="main-content">
@@ -48,6 +51,43 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Submit an Update</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Did you change institutes? Spot a typo? Let us know!</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Your Name</label>
+                        <input type="text" id="msgName" class="form-control" placeholder="e.g. Rohan Das">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Batch (Optional)</label>
+                        <input type="text" id="msgBatch" class="form-control" placeholder="e.g. 2017-22">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">What should be updated?</label>
+                        <textarea id="msgContent" class="form-control" rows="4" placeholder="I have moved to IIT Bombay. Please update my current institute."></textarea>
+                    </div>
+                    
+                    <div id="msgStatus" class="small text-danger"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnSendUpdate" class="btn btn-primary">Send Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         function toggleSidebar() {
