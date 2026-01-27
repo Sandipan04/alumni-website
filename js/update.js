@@ -1,9 +1,9 @@
 import { db } from './config.js';
 import { collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- CLOUDINARY CONFIG ---
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload";
-const CLOUDINARY_PRESET = "YOUR_UPLOAD_PRESET";
+// --- CONFIG FOR CLOUDINARY ---
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dqivrep05/image/upload";
+const CLOUDINARY_PRESET = "alumni_upload";
 
 // 1. Populate Search Years
 const currentYear = new Date().getFullYear();
