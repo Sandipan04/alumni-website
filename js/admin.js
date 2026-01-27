@@ -31,6 +31,7 @@ onAuthStateChanged(auth, (user) => {
         btnLogout.style.display = 'block';
         loadTable();
         loadInbox();
+        loadApprovals();
     } else {
         loginSec.style.display = 'block';
         dashSec.style.display = 'none';
@@ -296,3 +297,130 @@ async function loadInbox() {
 
 // 4. Attach Refresh Button
 document.getElementById('btnRefreshInbox').addEventListener('click', loadInbox);
+
+// --- LOAD APPROVALS (Updated to show Update vs New Join) ---
+async function loadApprovals() {
+    const container = document.getElementById('approvals-container');
+    container.innerHTML = '<div class="text-center small text-muted">Checking...</div>';
+
+    try {
+        const q = query(collection(db, "requests"), orderBy("submittedAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            container.innerHTML = '<div class="text-center small text-muted">No pending approvals.</div>';
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush">';
+        
+        snapshot.forEach(docSnap => {
+            const req = docSnap.data();
+            // Encode data safely for the button attribute
+            const dataString = encodeURIComponent(JSON.stringify(req));
+            
+            // 1. Determine Badge Type
+            let badgeHtml = '<span class="badge bg-success me-2">New Join</span>';
+            if (req.type === "UPDATE") {
+                badgeHtml = '<span class="badge bg-warning text-dark me-2">Update Request</span>';
+            }
+
+            // 2. Build HTML
+            html += `
+                <div class="list-group-item bg-light mb-2 rounded border">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            ${badgeHtml}
+                            <strong>${req.name}</strong> 
+                            <small class="text-muted">(${req.batch})</small>
+                            <div class="small text-secondary mt-1">
+                                ${req.position || ''} at ${req.institute || ''}
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-success btn-approve" data-id="${docSnap.id}" data-entry="${dataString}">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger btn-reject" data-id="${docSnap.id}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+
+        // Attach Listeners
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+            btn.addEventListener('click', (e) => rejectRequest(e.currentTarget.dataset.id));
+        });
+        
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                const data = JSON.parse(decodeURIComponent(e.currentTarget.dataset.entry));
+                approveRequest(id, data);
+            });
+        });
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="text-danger small">Error loading approvals.</div>';
+    }
+}
+
+// --- REJECT ACTION ---
+async function rejectRequest(id) {
+    if(!confirm("Reject and delete this application?")) return;
+    try {
+        await deleteDoc(doc(db, "requests", id));
+        loadApprovals(); // Refresh list
+    } catch(e) {
+        alert("Error rejecting: " + e.message);
+    }
+}
+
+// --- APPROVE ACTION (Handles both NEW and UPDATE) ---
+async function approveRequest(id, data) {
+    const isUpdate = (data.type === "UPDATE");
+    const actionText = isUpdate ? "Overwrite existing entry" : "Create new entry";
+    
+    if(!confirm(`Approve ${data.name}? This will ${actionText}.`)) return;
+
+    try {
+        // 1. Prepare Data for Main Database
+        const studentData = { ...data };
+        
+        // Remove request-specific metadata (we don't want these in the student profile)
+        delete studentData.submittedAt; 
+        delete studentData.status;
+        delete studentData.type;       
+        delete studentData.originalId; 
+        
+        studentData.lastUpdated = new Date();
+
+        // 2. Write to Database
+        if (isUpdate && data.originalId) {
+            // CASE A: Update Existing Student (Overwrite)
+            await updateDoc(doc(db, "students", data.originalId), studentData);
+        } else {
+            // CASE B: New Student (Create)
+            await addDoc(collection(db, "students"), studentData);
+        }
+
+        // 3. Delete from Requests Queue
+        await deleteDoc(doc(db, "requests", id));
+
+        alert("Approved successfully!");
+        loadApprovals(); // Refresh approvals list
+        loadTable();     // Refresh main database table
+    } catch (e) {
+        console.error(e);
+        alert("Error approving: " + e.message);
+    }
+}
+
+// Attach Refresh Button
+document.getElementById('btnRefreshApprovals').addEventListener('click', loadApprovals);

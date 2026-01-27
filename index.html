@@ -35,11 +35,20 @@
             <div class="text-center mt-5 text-muted small">Loading...</div>
         </nav>
 
+        <a href="join.html" class="btn-admin-sidebar" style="margin-top: auto; border-color: var(--primary); color: var(--primary);">
+            <i class="fas fa-user-plus"></i> Join Network
+        </a>
+
+        <a href="update.html" class="btn-admin-sidebar mt-2" style="color: #d97706; border-color: #d97706;">
+            <i class="fas fa-edit"></i> Update Profile
+        </a>
+
         <a href="admin.html" class="btn-admin-sidebar">
             <i class="fas fa-lock"></i> Admin Access
         </a>
+
         <button class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#updateModal">
-            <i class="fas fa-paper-plane"></i> Request Update
+            <i class="fas fa-paper-plane"></i> DM Admin
         </button>
     </div>
 
@@ -56,11 +65,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Submit an Update</h5>
+                    <h5 class="modal-title fw-bold">Send message to admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small">Did you change institutes? Spot a typo? Let us know!</p>
+                    <p class="text-muted small">If you want to join (new user) or update an existing entry, then please use "Join Network" or "Update Profile" button in the sidebar.</p>
+                    <p class="text-muted small">Want to say something to the admin? Use the form below.</p>
                     
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-secondary">Your Name</label>
@@ -73,8 +83,8 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-secondary">What should be updated?</label>
-                        <textarea id="msgContent" class="form-control" rows="4" placeholder="I have moved to IIT Bombay. Please update my current institute."></textarea>
+                        <label class="form-label small fw-bold text-secondary">Message</label>
+                        <textarea id="msgContent" class="form-control" rows="4" placeholder="Konnichiwa! I'm glad to have a platform like this."></textarea>
                     </div>
                     
                     <div id="msgStatus" class="small text-danger"></div>
