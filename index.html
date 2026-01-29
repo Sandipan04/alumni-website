@@ -22,34 +22,47 @@
     </div>
 
     <div class="sidebar-container" id="sidebar">
-        <div class="brand-title justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-graduation-cap text-primary"></i>
-                <span>Alumni Hub</span>
+    
+        <div class="sidebar-scroll-area">
+            <div class="brand-title justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-graduation-cap text-primary"></i>
+                    <span>Alumni Hub</span>
+                </div>
+                <button class="btn btn-sm btn-light d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
             </div>
-            <button class="btn btn-sm btn-light d-lg-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+            
+            <div class="nav-label">Directories</div>
+            <nav id="sidebar-nav" class="nav flex-column">
+                <div class="text-center mt-5 text-muted small">Loading...</div>
+            </nav>
         </div>
-        
-        <div class="nav-label">Directories</div>
-        <nav id="sidebar-nav" class="nav flex-column">
-            <div class="text-center mt-5 text-muted small">Loading...</div>
-        </nav>
 
-        <a href="join.html" class="btn-admin-sidebar" style="margin-top: auto; border-color: var(--primary); color: var(--primary);">
-            <i class="fas fa-user-plus"></i> Join Network
-        </a>
+        <div class="sidebar-footer">
+            <a href="join.html" class="btn-admin-sidebar" style="border-color: var(--primary); color: var(--primary);">
+                <i class="fas fa-user-plus"></i> Join Network
+            </a>
 
-        <a href="update.html" class="btn-admin-sidebar mt-2" style="color: #d97706; border-color: #d97706;">
-            <i class="fas fa-edit"></i> Update Profile
-        </a>
+            <button class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.9rem; padding: 0.6rem;" data-bs-toggle="modal" data-bs-target="#updateModal">
+                <i class="fas fa-paper-plane"></i> Request Update
+            </button>
 
-        <a href="admin.html" class="btn-admin-sidebar">
-            <i class="fas fa-lock"></i> Admin Access
-        </a>
+            <a href="admin.html" class="btn-admin-sidebar mt-2">
+                <i class="fas fa-lock"></i> Admin Access
+            </a>
 
-        <button class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#updateModal">
-            <i class="fas fa-paper-plane"></i> DM Admin
-        </button>
+            <button class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#updateModal">
+                <i class="fas fa-paper-plane"></i> DM Admin
+            </button>
+
+            <div class="text-center mt-4 pt-3 border-top" style="font-size: 0.7rem; color: #94a3b8;">
+                Developed by 
+                <a href="https://sandipan04.github.io/webpage/" target="_blank" class="fw-bold text-decoration-none" style="color: #64748b;">
+                    Sandipan Samanta
+                </a>
+            </div>
+        </div>
+
     </div>
 
     <div class="main-content">

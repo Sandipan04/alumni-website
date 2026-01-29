@@ -27,10 +27,27 @@ a { text-decoration: none; }
     width: var(--sidebar-width);
     background: white;
     border-right: 1px solid #e2e8f0;
-    padding: 2rem 1.5rem;
-    overflow-y: auto;
     z-index: 1000;
     transition: transform 0.3s ease-in-out;
+    
+    /* --- NEW FLEX PROPERTIES --- */
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* We will move padding to inner divs for better scrolling */
+}
+
+/* Add a wrapper for the scrolling part */
+.sidebar-scroll-area {
+    flex-grow: 1; /* Takes up all available empty space */
+    overflow-y: auto; /* Only this middle part scrolls */
+    padding: 2rem 1.5rem 1rem 1.5rem;
+}
+
+/* Style for the bottom footer area */
+.sidebar-footer {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    background: white; /* Covers content when scrolling */
+    border-top: 1px solid #f1f5f9;
 }
 
 .brand-title {
