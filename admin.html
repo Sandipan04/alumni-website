@@ -162,6 +162,26 @@
         </div>
 
         <h6 class="text-uppercase text-muted fw-bold mb-3 ls-1">Database Entries</h6>
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <input type="text" id="adminSearch" class="form-control" placeholder="Search database...">
+            </div>
+            <div class="col-md-3">
+                <select id="adminFilterProg" class="form-select">
+                    <option value="">All Programmes</option>
+                    <option value="Int. MSc.">Int. MSc.</option>
+                    <option value="Int. PhD">Int. PhD</option>
+                    <option value="PhD">PhD</option>
+                    <option value="PostDoc">PostDoc</option>
+                    <option value="Faculty">Faculty</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="adminFilterYear" class="form-select">
+                    <option value="">Start Year</option>
+                    </select>
+            </div>
+        </div>
         <div class="card-custom p-0 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-admin mb-0">

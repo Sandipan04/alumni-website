@@ -53,6 +53,42 @@
     </div>
 
     <div class="main-content">
+
+        <div class="card-custom mb-4 p-3 border-0 bg-white shadow-sm">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 bg-light" placeholder="Search name, interests, institute...">
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <select id="filterProg" class="form-select bg-light">
+                        <option value="">All Programmes</option>
+                        <option value="Int. MSc.">Int. MSc.</option>
+                        <option value="Int. PhD">Int. PhD</option>
+                        <option value="PhD">PhD</option>
+                        <option value="PostDoc">PostDoc</option>
+                        <option value="Faculty">Faculty</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filterStart" class="form-select bg-light">
+                        <option value="">Start Year</option>
+                        </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filterEnd" class="form-select bg-light">
+                        <option value="">End Year</option>
+                        </select>
+                </div>
+                <div class="col-md-2">
+                    <button id="btnReset" class="btn btn-outline-secondary w-100">Reset</button>
+                </div>
+            </div>
+        </div>
+
         <div id="alumni-container">
             <div class="text-center" style="margin-top: 100px;">
                 <div class="spinner-border text-primary mb-3" role="status"></div>

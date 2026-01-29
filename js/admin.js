@@ -47,7 +47,16 @@ document.getElementById('btnLogin').addEventListener('click', () => {
 
 document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 
-// --- LOAD TABLE ---
+// Global variable
+let adminData = []; 
+
+// 1. Populate Admin Year Filter
+const adminYearSelect = document.getElementById('adminFilterYear');
+for (let y = new Date().getFullYear(); y >= 2007; y--) {
+    adminYearSelect.add(new Option(y, y));
+}
+
+// 2. Updated Load Table
 async function loadTable() {
     const tbody = document.getElementById('admin-table-body');
     tbody.innerHTML = '<tr><td colspan="4" class="text-center">Loading...</td></tr>';
@@ -55,9 +64,40 @@ async function loadTable() {
     const q = query(collection(db, "students"), orderBy("batch", "desc"));
     const snapshot = await getDocs(q);
     
+    adminData = [];
+    snapshot.forEach(doc => {
+        adminData.push({ id: doc.id, ...doc.data() });
+    });
+
+    applyAdminFilters();
+}
+
+// 3. Admin Filter Logic
+function applyAdminFilters() {
+    const term = document.getElementById('adminSearch').value.toLowerCase();
+    const prog = document.getElementById('adminFilterProg').value;
+    const year = document.getElementById('adminFilterYear').value;
+    const tbody = document.getElementById('admin-table-body');
+
+    const filtered = adminData.filter(s => {
+        // Parse Batch
+        const match = s.batch.match(/^(.*)\s+(\d{4})(?:-(\d{2,4}))?$/);
+        const sProg = match ? match[1] : "";
+        const sStart = match ? match[2] : "";
+
+        if (prog && sProg !== prog) return false;
+        if (year && sStart !== year) return false;
+
+        if (term) {
+            const content = [s.name, s.batch, s.institute, s.email].join(" ").toLowerCase();
+            if (!content.includes(term)) return false;
+        }
+        return true;
+    });
+
+    // Render Rows
     tbody.innerHTML = '';
-    snapshot.forEach(docSnap => {
-        const s = docSnap.data();
+    filtered.forEach(s => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="fw-bold">${s.name}</td>
@@ -68,11 +108,45 @@ async function loadTable() {
                 <button class="btn btn-sm btn-outline-danger btn-delete"><i class="fas fa-trash"></i></button>
             </td>
         `;
-        row.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(docSnap.id, s.name));
-        row.querySelector('.btn-edit').addEventListener('click', () => startEdit(docSnap.id, s));
+        
+        // Use s.id (which we stored earlier)
+        row.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(s.id, s.name));
+        row.querySelector('.btn-edit').addEventListener('click', () => startEdit(s.id, s));
         tbody.appendChild(row);
     });
 }
+
+// 4. Listeners
+document.getElementById('adminSearch').addEventListener('input', applyAdminFilters);
+document.getElementById('adminFilterProg').addEventListener('change', applyAdminFilters);
+document.getElementById('adminFilterYear').addEventListener('change', applyAdminFilters);
+
+// --- LOAD TABLE ---
+// async function loadTable() {
+//     const tbody = document.getElementById('admin-table-body');
+//     tbody.innerHTML = '<tr><td colspan="4" class="text-center">Loading...</td></tr>';
+    
+//     const q = query(collection(db, "students"), orderBy("batch", "desc"));
+//     const snapshot = await getDocs(q);
+    
+//     tbody.innerHTML = '';
+//     snapshot.forEach(docSnap => {
+//         const s = docSnap.data();
+//         const row = document.createElement('tr');
+//         row.innerHTML = `
+//             <td class="fw-bold">${s.name}</td>
+//             <td><span class="badge bg-secondary">${s.batch}</span></td>
+//             <td><small>${s.institute || '-'}</small></td>
+//             <td class="text-end">
+//                 <button class="btn btn-sm btn-outline-primary me-1 btn-edit"><i class="fas fa-edit"></i></button>
+//                 <button class="btn btn-sm btn-outline-danger btn-delete"><i class="fas fa-trash"></i></button>
+//             </td>
+//         `;
+//         row.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(docSnap.id, s.name));
+//         row.querySelector('.btn-edit').addEventListener('click', () => startEdit(docSnap.id, s));
+//         tbody.appendChild(row);
+//     });
+// }
 
 // --- DELETE ---
 async function deleteStudent(id, name) {
@@ -424,3 +498,5 @@ async function approveRequest(id, data) {
 
 // Attach Refresh Button
 document.getElementById('btnRefreshApprovals').addEventListener('click', loadApprovals);
+
+// --- Search Functionality for Students Table ---
