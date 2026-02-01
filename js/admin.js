@@ -1,7 +1,7 @@
 // js/admin.js
 import { db, auth } from './config.js'; // REMOVED STORAGE
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // --- CONFIG FOR CLOUDINARY ---
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dqivrep05/image/upload";
@@ -24,18 +24,24 @@ onAuthStateChanged(auth, (user) => {
     const loginSec = document.getElementById('login-section');
     const dashSec = document.getElementById('dashboard-section');
     const btnLogout = document.getElementById('btnLogout');
+    const btnChangePass = document.getElementById('btnChangePass'); // <--- Select the button
 
     if (user) {
+        // User is Logged In
         loginSec.style.display = 'none';
         dashSec.style.display = 'block';
         btnLogout.style.display = 'block';
+        btnChangePass.style.display = 'inline-block'; // <--- SHOW IT
+        
         loadTable();
         loadInbox();
         loadApprovals();
     } else {
+        // User is Logged Out
         loginSec.style.display = 'block';
         dashSec.style.display = 'none';
         btnLogout.style.display = 'none';
+        btnChangePass.style.display = 'none'; // <--- HIDE IT
     }
 });
 
@@ -45,7 +51,76 @@ document.getElementById('btnLogin').addEventListener('click', () => {
     signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login Failed: " + err.message));
 });
 
+document.getElementById('email').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('password').focus(); // Move to password box
+    }
+});
+
+document.getElementById('password').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('btnLogin').click();
+    }
+});
+
 document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+
+// --- CHANGE PASSWORD LOGIC ---
+document.getElementById('btnSavePass').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSavePass');
+    const msg = document.getElementById('passMsg');
+    const p1 = document.getElementById('newPass').value;
+    const p2 = document.getElementById('confirmPass').value;
+
+    // Validation
+    if (p1.length < 6) {
+        msg.innerText = "Password must be at least 6 characters.";
+        return;
+    }
+    if (p1 !== p2) {
+        msg.innerText = "Passwords do not match.";
+        return;
+    }
+
+    try {
+        btn.disabled = true;
+        btn.innerText = "Updating...";
+        
+        const user = auth.currentUser;
+        
+        if (user) {
+            await updatePassword(user, p1);
+            alert("Success! Please login with your new password.");
+            
+            // Close Modal
+            const modalEl = document.getElementById('passwordModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+            
+            // Clear fields
+            document.getElementById('newPass').value = "";
+            document.getElementById('confirmPass').value = "";
+            msg.innerText = "";
+            
+            // Optional: Logout user to force re-login
+            await signOut(auth);
+        } else {
+            throw new Error("No user logged in.");
+        }
+
+    } catch (e) {
+        console.error(e);
+        // Firebase requires "Recent Login" for sensitive actions.
+        if (e.code === 'auth/requires-recent-login') {
+            msg.innerText = "Security: Please logout and login again to change password.";
+        } else {
+            msg.innerText = "Error: " + e.message;
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Update Password";
+    }
+});
 
 // Global variable
 let adminData = []; 
@@ -498,5 +573,3 @@ async function approveRequest(id, data) {
 
 // Attach Refresh Button
 document.getElementById('btnRefreshApprovals').addEventListener('click', loadApprovals);
-
-// --- Search Functionality for Students Table ---
